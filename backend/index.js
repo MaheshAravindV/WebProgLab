@@ -12,12 +12,14 @@ app.use(cors());
 
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-
-  const { pass } = (
+  const rows = (
     await pool.query(`SELECT pass from users where uname like '${username}';`)
-  ).rows[0];
-  if (password == pass) res.status(200);
-  else res.status(401);
-
+  ).rows;
+  if (rows.length == 0) res.status(401);
+  else {
+    const { pass } = rows[0];
+    if (password == pass) res.status(200);
+    else res.status(401);
+  }
   res.send();
 });
